@@ -1,0 +1,13 @@
+claim:
+  name: 称重记录认领或纠正归属
+  description: 不填测量ID时使用当前选中的待认领记录；person_id须为profiles中的键，可指定历史ID纠正归属。
+  fields:
+    measurement_id:
+      name: 测量ID
+      selector:
+        text:
+    person_id:
+      name: 配置中的档案ID
+      example: person_1
+      selector:
+        text:

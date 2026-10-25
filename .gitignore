@@ -1,0 +1,18 @@
+# Personal configuration and runtime data must never enter the public repository.
+secrets.yaml
+*.local.yaml
+*.local.json
+.env
+.esphome/
+__pycache__/
+*.pyc
+*.sqlite*
+*.db
+*.log
+build/
+dist/
+releases/
+.venv/
+venv/
+*.elf
+*.map

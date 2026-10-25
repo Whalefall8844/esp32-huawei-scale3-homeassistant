@@ -1,0 +1,29 @@
+SPDX-License-Identifier: GPL-3.0-or-later
+
+This project includes an ESPHome C++ implementation of Huawei Hagrid WSP and
+a Python port of the openScale Scale3 adult four-electrode composition model.
+It is not affiliated with or endorsed by Huawei, ESPHome or Home Assistant.
+
+Upstream: https://github.com/oliexdev/openScale
+Revision: 8ef93b2092745ea84ddd677eac1871452c27b3d5
+Copyright (C) 2026 openScale contributors, and respective upstream authors.
+License: GNU General Public License version 3 or (at your option) any later version.
+
+Referenced upstream source under android_app/app/src/main/java/com/health/openscale/:
+  core/bluetooth/libs/HuaweiScale3BodyComposition.kt
+  core/bluetooth/libs/HuaweiHagridWspLib.kt
+  core/bluetooth/scales/HuaweiHagridWspHandler.kt
+
+Changes in this project: port WSP framing and authentication to ESPHome/mbedTLS;
+resolve GATT attributes by UUID; serialize CCCD subscriptions and writes;
+publish atomic per-cycle measurements; limit final rereads to one per cycle;
+add runtime provisioning; port body model coefficients to Python; add configurable
+HA profiles, SQLite archive, conservative assignment, and archive-based trends.
+
+Distributed binaries also incorporate ESPHome, ESP-IDF, mbedTLS, noise-c and
+other dependencies under their respective upstream licenses. The project GPL
+does not replace those notices. See docs/THIRD_PARTY.md and upstream distributions.
+
+No keys, manufacturer credentials or measured health records are distributed.
+Source for the project-specific firmware is included in firmware/ and tied to
+the release Git tag. Body-composition output is an estimate, not medical advice.

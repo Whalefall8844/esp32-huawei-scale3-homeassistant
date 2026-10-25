@@ -1,0 +1,230 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Generic build: no Wi-Fi credentials, target MAC, protocol keys or personal profile.
+esphome:
+  name: huawei-scale3
+  friendly_name: Huawei Scale3
+  name_add_mac_suffix: true
+  min_version: 2026.7.4
+  on_boot:
+    priority: -100
+    then:
+      - lambda: id(scale_client).set_enabled(false);
+      - script.execute: apply_scale_configuration
+
+esp32:
+  board: esp32-c3-devkitm-1
+  flash_size: 4MB
+  framework:
+    type: esp-idf
+    version: 5.5.5
+    sdkconfig_options:
+      CONFIG_ESP_COEX_SW_COEXIST_ENABLE: "y"
+
+external_components:
+  - source:
+      type: local
+      path: components
+    components: [huawei_scale]
+
+logger:
+  level: INFO
+  hardware_uart: USB_SERIAL_JTAG
+
+wifi:
+  output_power: 8.5dB
+  reboot_timeout: 0s
+
+# USB serial provisioning; deliberately no open fallback AP or web server.
+improv_serial:
+
+# No universal shared encryption key. HA provisions an individual key on pairing.
+api:
+  encryption: {}
+  reboot_timeout: 0s
+
+# No network OTA is enabled in the generic binary. See docs/FIRMWARE.md.
+esp32_ble:
+  advertising: false
+
+esp32_ble_tracker:
+  scan_parameters:
+    continuous: true
+    active: true
+
+ble_client:
+  - id: scale_client
+    mac_address: "00:00:00:00:00:00"
+    auto_connect: true
+
+huawei_scale:
+  id: scale_driver
+  ble_client_id: scale_client
+  weight_sensor: scale_weight
+  impedance_sensor: scale_impedance
+  heart_rate_sensor: scale_heart_rate
+  measurement_sensor: scale_measurement
+  status_sensor: scale_status
+
+globals:
+  - id: scale_configuration_valid
+    type: bool
+    restore_value: false
+    initial_value: "false"
+
+text:
+  - platform: template
+    id: scale_mac
+    name: Scale Bluetooth MAC
+    entity_category: config
+    mode: text
+    optimistic: true
+    restore_value: true
+    max_length: 17
+  - platform: template
+    id: scale_cak
+    name: Scale CAK
+    entity_category: config
+    mode: password
+    optimistic: true
+    restore_value: true
+    max_length: 32
+  - platform: template
+    id: scale_c1
+    name: Scale C1
+    entity_category: config
+    mode: password
+    optimistic: true
+    restore_value: true
+    max_length: 32
+  - platform: template
+    id: scale_c2
+    name: Scale C2
+    entity_category: config
+    mode: password
+    optimistic: true
+    restore_value: true
+    max_length: 32
+
+# Scale-side protocol profile only, NOT the HA archive's person identity.
+number:
+  - platform: template
+    id: scale_gender
+    name: Scale Protocol Gender
+    entity_category: config
+    min_value: 0
+    max_value: 1
+    step: 1
+    optimistic: true
+    restore_value: true
+    initial_value: 1
+  - platform: template
+    id: scale_age
+    name: Scale Protocol Age
+    entity_category: config
+    min_value: 1
+    max_value: 100
+    step: 1
+    optimistic: true
+    restore_value: true
+    initial_value: 30
+  - platform: template
+    id: scale_height
+    name: Scale Protocol Height
+    entity_category: config
+    unit_of_measurement: cm
+    min_value: 120
+    max_value: 230
+    step: 1
+    optimistic: true
+    restore_value: true
+    initial_value: 170
+
+switch:
+  - platform: template
+    id: scale_connection
+    name: Huawei Scale Connection
+    entity_category: config
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_OFF
+    turn_on_action:
+      - lambda: |-
+          if (id(scale_configuration_valid)) id(scale_client).set_enabled(true);
+          else {
+            id(scale_connection).publish_state(false);
+            id(scale_status).publish_state("Configure MAC/keys, then press Apply Configuration");
+          }
+    turn_off_action:
+      - lambda: id(scale_client).set_enabled(false);
+
+script:
+  - id: apply_scale_configuration
+    mode: single
+    then:
+      - lambda: |-
+          id(scale_configuration_valid) = false;
+          id(scale_client).set_enabled(false);
+      - wait_until:
+          condition:
+            lambda: return !id(scale_driver).is_session_active();
+          timeout: 10s
+      - lambda: |-
+          const bool valid = id(scale_driver).configure_device(
+            id(scale_mac).state, id(scale_cak).state, id(scale_c1).state, id(scale_c2).state,
+            (uint8_t) id(scale_gender).state, (uint8_t) id(scale_age).state,
+            (uint16_t) id(scale_height).state);
+          id(scale_configuration_valid) = valid;
+          if (!valid) {
+            id(scale_connection).publish_state(false);
+            id(scale_status).publish_state("Configuration incomplete/invalid, or disconnect pending");
+          } else {
+            id(scale_status).publish_state("Configured; enable Huawei Scale Connection when ready");
+            id(scale_client).set_enabled(id(scale_connection).state);
+          }
+
+button:
+  - platform: template
+    name: Apply Scale Configuration
+    entity_category: config
+    on_press:
+      - script.execute: apply_scale_configuration
+  - platform: restart
+    name: Bridge Restart
+    entity_category: diagnostic
+
+sensor:
+  - platform: template
+    id: scale_weight
+    name: Huawei Scale Weight
+    unit_of_measurement: kg
+    device_class: weight
+    state_class: measurement
+    accuracy_decimals: 2
+    update_interval: never
+  - platform: template
+    id: scale_impedance
+    name: Huawei Scale Impedance
+    unit_of_measurement: Ω
+    state_class: measurement
+    accuracy_decimals: 1
+    update_interval: never
+  - platform: template
+    id: scale_heart_rate
+    name: Huawei Scale Heart Rate
+    unit_of_measurement: bpm
+    state_class: measurement
+    accuracy_decimals: 0
+    update_interval: never
+  - platform: wifi_signal
+    name: WiFi Signal
+    update_interval: 60s
+
+text_sensor:
+  - platform: template
+    id: scale_measurement
+    name: Huawei Scale Measurement
+    update_interval: never
+  - platform: template
+    id: scale_status
+    name: Huawei Scale Status
+    entity_category: diagnostic
+    update_interval: never

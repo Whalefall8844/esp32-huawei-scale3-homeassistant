@@ -1,0 +1,30 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# 全部为虚构示例，不是真实个人资料。请在自己的HA中替换；不要提交个人资料。
+# 合并到 configuration.yaml，不要重复创建 huawei_scale_archive 顶级键。
+huawei_scale_archive:
+  # 预期默认实体ID；请在开发者工具→状态确认实际ID（设备名/重命名会改变ID）。
+  source_entity: sensor.huawei_scale3_huawei_scale_measurement
+  profiles:
+    person_1:
+      name: 示例人物一（虚构）
+      sex: male
+      birth_date: "1990-01-01"
+      height_cm: 170
+    person_2:
+      name: 示例人物二（虚构）
+      sex: female
+      birth_date: "1992-01-01"
+      height_cm: 160
+  # 不填time_zone时沿用 hass.config.time_zone；需要覆盖时取消下一行注释。
+  # time_zone: UTC
+  # 相对于HA配置目录，运行时自动创建；仓库不包含数据库。
+  storage_path: huawei_scale_archive.sqlite3
+  weight_tolerance_kg: 3.0
+  impedance_tolerance_ohm: 100.0
+  # 可选：关联HA person实体，不参与识别；键必须存在于profiles。
+  person_entities: {}
+  # 默认不提供初始参考：分别手动认领以学习真实参考；下方数值纯属虚构演示。
+  initial_references: {}
+  # initial_references:
+  #   person_1: {weight: 65.0, impedance: 500.0}  # 虚构，非实测
+  #   person_2: {weight: 55.0, impedance: 600.0}  # 虚构，非实测

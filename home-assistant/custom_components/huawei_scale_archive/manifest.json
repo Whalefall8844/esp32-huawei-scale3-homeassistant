@@ -1,0 +1,10 @@
+{
+  "domain": "huawei_scale_archive",
+  "name": "Huawei Scale Archive",
+  "version": "0.2.0",
+  "documentation": "https://github.com/Whalefall8844/esp32-huawei-scale3-homeassistant/tree/main/home-assistant",
+  "codeowners": [],
+  "dependencies": [],
+  "requirements": [],
+  "iot_class": "local_push"
+}

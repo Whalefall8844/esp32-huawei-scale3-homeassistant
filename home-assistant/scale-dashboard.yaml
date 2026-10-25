@@ -1,0 +1,112 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# 两个虚构档案的仪表板结构示例；不包含真实或预灌入的称重记录。
+title: 称重档案（虚构配置示例）
+views:
+  - title: 示例人物一（虚构）
+    path: person_1
+    cards:
+      - type: markdown
+        content: "虚构配置示例，请先替换自己的档案资料。体重、阻抗、心率是采集值，身体成分为openScale模型估算，非华为SDK，不用于医疗诊断。"
+      - type: entities
+        title: 示例人物一（虚构） · 身体指标
+        show_header_toggle: false
+        entities:
+          - entity: sensor.scale_person_1_weight
+            name: 体重
+          - entity: sensor.scale_person_1_bmi
+            name: BMI
+          - entity: sensor.scale_person_1_body_fat
+            name: 体脂率
+          - entity: sensor.scale_person_1_water
+            name: 水分
+          - entity: sensor.scale_person_1_skeletal_muscle
+            name: 骨骼肌比例
+          - entity: sensor.scale_person_1_bmr
+            name: 基础代谢率
+          - entity: sensor.scale_person_1_tdee
+            name: 每日总能量消耗
+          - entity: sensor.scale_person_1_visceral_fat
+            name: 内脏脂肪等级
+          - entity: sensor.scale_person_1_bone_mineral
+            name: 骨矿物质
+          - entity: sensor.scale_person_1_lean_body_mass
+            name: 去脂体重
+          - entity: sensor.scale_person_1_protein
+            name: 蛋白质
+          - entity: sensor.scale_person_1_heart_rate
+            name: 心率
+          - entity: sensor.scale_person_1_impedance
+            name: 阻抗
+          - entity: sensor.scale_person_1_measured_at
+            name: 测量时间
+          - entity: number.scale_person_1_activity
+            name: 活动系数
+      - type: custom:scale-archive-trend
+        title: 示例人物一（虚构） · 体重近7天
+        entity: sensor.scale_person_1_weight
+        metric: weight
+        # time_zone: UTC  # 可选；默认沿用归档时区，再回退HA时区
+      - type: custom:scale-archive-trend
+        title: 示例人物一（虚构） · 体脂率近7天
+        entity: sensor.scale_person_1_body_fat
+        metric: body_fat
+  - title: 示例人物二（虚构）
+    path: person_2
+    cards:
+      - type: markdown
+        content: "虚构配置示例，请先替换自己的档案资料。体重、阻抗、心率是采集值，身体成分为openScale模型估算，非华为SDK，不用于医疗诊断。"
+      - type: entities
+        title: 示例人物二（虚构） · 身体指标
+        show_header_toggle: false
+        entities:
+          - entity: sensor.scale_person_2_weight
+            name: 体重
+          - entity: sensor.scale_person_2_bmi
+            name: BMI
+          - entity: sensor.scale_person_2_body_fat
+            name: 体脂率
+          - entity: sensor.scale_person_2_water
+            name: 水分
+          - entity: sensor.scale_person_2_skeletal_muscle
+            name: 骨骼肌比例
+          - entity: sensor.scale_person_2_bmr
+            name: 基础代谢率
+          - entity: sensor.scale_person_2_tdee
+            name: 每日总能量消耗
+          - entity: sensor.scale_person_2_visceral_fat
+            name: 内脏脂肪等级
+          - entity: sensor.scale_person_2_bone_mineral
+            name: 骨矿物质
+          - entity: sensor.scale_person_2_lean_body_mass
+            name: 去脂体重
+          - entity: sensor.scale_person_2_protein
+            name: 蛋白质
+          - entity: sensor.scale_person_2_heart_rate
+            name: 心率
+          - entity: sensor.scale_person_2_impedance
+            name: 阻抗
+          - entity: sensor.scale_person_2_measured_at
+            name: 测量时间
+          - entity: number.scale_person_2_activity
+            name: 活动系数
+      - type: custom:scale-archive-trend
+        title: 示例人物二（虚构） · 体重近7天
+        entity: sensor.scale_person_2_weight
+        metric: weight
+        # time_zone: UTC  # 可选；默认沿用归档时区，再回退HA时区
+      - type: custom:scale-archive-trend
+        title: 示例人物二（虚构） · 体脂率近7天
+        entity: sensor.scale_person_2_body_fat
+        metric: body_fat
+  - title: 待认领
+    path: pending
+    cards:
+      - type: entities
+        title: 称重归档
+        entities:
+          - sensor.scale_pending_count
+          - select.scale_claim_record
+          - select.scale_claim_person
+          - button.scale_claim
+      - type: markdown
+        content: "先为每个档案认领至少一条记录以建立参考；只在体重和可用阻抗唯一匹配时自动归档。历史归属纠正使用huawei_scale_archive.claim，趋势随归档归属更新，不使用Recorder历史状态。"

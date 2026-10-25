@@ -1,0 +1,18 @@
+This component contains a Python port of the adult four-electrode body-composition
+model in oliexdev/openScale, licensed under GPL-3.0-or-later.
+
+Upstream repository: https://github.com/oliexdev/openScale
+Pinned commit: 8ef93b2092745ea84ddd677eac1871452c27b3d5
+Source path: android_app/app/src/main/java/com/health/openscale/core/bluetooth/libs/HuaweiScale3BodyComposition.kt
+Source SHA-256: 3ceaa3c44bb07d09fd3b1418512f0d4773fbe727e28968b6c9d76cc73d387052
+
+Changes: port coefficients, feature construction, adult validity ranges and
+composition formulas to Python; add Home Assistant sensors and SQLite archive,
+per-person profiles, assignment and adjustable activity factors.
+The source of this port is included in this directory. See LICENSE.
+Independent estimate, not the official Huawei SDK; no medical accuracy claim.
+
+Public-source adaptation (2026-10-25): replace private built-in profiles with
+required YAML profiles; make archive/card timezones configurable, defaulting to
+Home Assistant's timezone; provide synthetic examples; retain the upstream
+coefficients and formulas. Licensed under GPL-3.0-or-later.
